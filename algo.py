@@ -6,47 +6,6 @@ import logging;
 
 logger = logging.getLogger(__name__)
 
-def dum(Unrated_M,SiM,m_ind,mind_R,K,u_ind,Rhat,MG_Mat):
-    logger.info('DUM Algorithm')
-    Rec_Movies_ID = list();
-    indx = np.argsort(Rhat[u_ind,Unrated_M])[::-1];
-    gen_sum = np.sum(MG_Mat[Unrated_M[indx],:],axis=1); #get genre count in the order of decreasing relevance
-    ind = 0;    #most relevant item is added to the list first.
-    val = 0;
-    for i in range(K):
-        best_select = Unrated_M[indx[ind]];
-        Rec_Movies_ID.append(best_select);
-        val = gen_sum[ind];
-        gen_sum -= val;
-        gen_sum = np.delete(gen_sum,ind);
-        indx = np.delete(indx,ind);
-        ind = np.argmax(gen_sum);
-    logger.info('Finished DUM re-ranking algorithm')
-    return np.array(Rec_Movies_ID,dtype=int),0;
-###########################################################################################
-def msd(Unrated_M,SiM,m_ind,mind_R,K,u_ind,Rhat,MG_Mat):
-    logger.info('MSD Algorithm')
-    eps = 1e-8
-    Rec_Movies_ID = list()
-    CG = list()
-    beta = 0.5
-    S = np.array([],dtype=np.uint16)
-    xf = Rhat[u_ind,Unrated_M]+beta*np.sum(1-SiM[:,Unrated_M],axis=0) + eps
-    F_j = np.copy(xf)
-    xf_b = 0
-    for i in range(K):
-        A = xf-xf_b
-        CG.append(1-np.min(A/F_j))
-        ind = np.argmax(A)
-        best_select = Unrated_M[ind]
-        S = np.append(S,best_select)
-        Rec_Movies_ID.append(best_select)
-        Unrated_M  = np.delete(Unrated_M,ind)
-        F_j = np.delete(F_j,ind)
-        xf_b = np.delete(xf,ind)
-        xf = Rhat[u_ind,Unrated_M]+beta*np.sum(1-SiM[S[:,None],Unrated_M],axis=0)
-    logger.info('Finished MSD re-ranking algorithm')
-    return np.array(Rec_Movies_ID,dtype=int),max(CG)
 ###############################################################################################
 def mmr(Unrated_M,SiM,m_ind,mind_R,K,u_ind,Rhat,MG_Mat):
     logger.info('MMR algorithm')

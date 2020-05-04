@@ -80,8 +80,7 @@ def main(alg): #main function
 
         for u_ind in users:
             m_ind,m_rat = get_rated_movies(R_train,u_ind)   #get already rated movie indxs and ratings values
-            Unrated_M,N = get_unrated_movies(R_test,u_ind)    #compare performance on the test ratings
-            #Unrated_M = np.setdiff1d(np.arange(c_sz,dtype=np.uint16),m_ind,assume_unique=True)
+            Unrated_M,N = get_unrated_movies(R_test,u_ind)
             U_rmd[u_ind] = baselines[alg](Unrated_M,II_SiM,m_ind,m_rat,K)
  
             for i in rmd_sz:
